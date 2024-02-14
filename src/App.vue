@@ -25,7 +25,7 @@ async function handleCopyPrIds() {
 		}
 	});
 
-	const prIds = urls.map(url => url.slice(url.lastIndexOf('/') + 1));
+	const prIds = urls.map(url => url.slice(url.lastIndexOf('/') + 1)).sort((a, b) => +a - +b);
 	if (!prIds.length) return;
 	clearTimeout(copiedPrIdsTimeout);
 	navigator.clipboard.writeText(prIds.join(' '));

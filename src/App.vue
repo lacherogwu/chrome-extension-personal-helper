@@ -3,15 +3,22 @@ import { executeScriptCurrentTab } from './utils';
 
 async function handleCopyPrIds() {
 	const urls = await executeScriptCurrentTab(() => {
-		const urls: string[] = [];
-		const els = document.querySelectorAll('.cu-git-integration-modal__list-row');
-		els.forEach(el => {
-			const a = el.querySelector('a[href*="github.com"]');
-			const href = a?.getAttribute('href');
-			if (href) urls.push(href);
-		});
+		const prsContainerEl = getPRContainerEl();
+		if (!prsContainerEl) return [];
 
-		return urls;
+		const els = prsContainerEl.querySelectorAll<HTMLAnchorElement>('a[href*="github.com"');
+		return Array.from(els).map(el => el.href);
+
+		function getPRContainerEl() {
+			const els = document.querySelectorAll('div.title');
+
+			for (const el of els) {
+				const title = el.textContent;
+				if (title?.includes('Pull Requests')) {
+					return el.parentElement?.parentElement;
+				}
+			}
+		}
 	});
 
 	const prIds = urls.map(url => url.slice(url.lastIndexOf('/') + 1));

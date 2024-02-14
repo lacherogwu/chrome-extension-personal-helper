@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { executeScriptCurrentTab } from './utils';
+
+const copiedPrIds = ref(false);
+let copiedPrIdsTimeout: number;
 
 async function handleCopyPrIds() {
 	const urls = await executeScriptCurrentTab(() => {
@@ -22,13 +26,18 @@ async function handleCopyPrIds() {
 	});
 
 	const prIds = urls.map(url => url.slice(url.lastIndexOf('/') + 1));
+	if (!prIds.length) return;
+	clearTimeout(copiedPrIdsTimeout);
 	navigator.clipboard.writeText(prIds.join(' '));
+	copiedPrIds.value = true;
+	copiedPrIdsTimeout = setTimeout(() => (copiedPrIds.value = false), 2000);
 }
 </script>
 
 <template>
 	<h2 class="text-3xl font-medium mb-4">Personal Helper</h2>
-	<button @click="handleCopyPrIds">Copy ClickUp PR IDs</button>
+	<button class="mb-1" @click="handleCopyPrIds">Copy ClickUp PR IDs</button>
+	<p v-show="copiedPrIds" class="text-green-600">copied</p>
 </template>
 
 <style scoped>

@@ -2,7 +2,9 @@
 
 ## Development
 
-`npm run build:watch`
+`npm run dev`
+
+- if app is not working, reload the extension in Chrome `chrome://extensions`
 
 ## Usage
 
